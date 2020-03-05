@@ -81,6 +81,9 @@ bld/
 # Uncomment if you have tasks that create the project's static files in wwwroot
 #wwwroot/
 
+# VS Code Settings
+.vscode/settings.json
+
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
@@ -390,3 +393,4 @@ Temporary Items
 docker-compose.yml
 .env
 dist
+migrations/dist
