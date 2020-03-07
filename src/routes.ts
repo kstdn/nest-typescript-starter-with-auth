@@ -3,13 +3,14 @@ export const Routes = {
 
   Auth: {
     Root: 'auth',
+    Register: 'register',
     Login: 'login',
     RefreshToken: 'refresh-token',
     Logout: 'logout',
+    ChangePassword: 'change-password'
   },
 
   Users: {
-    Root: 'users',
-    ChangePassword: 'change-password',
+    Root: 'users'
   },
 };

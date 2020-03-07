@@ -34,13 +34,13 @@ export class AuthController {
     private readonly config: ConfigService,
   ) {}
 
-  @Post()
-  async createUser(@Body() user: CreateUserDto): Promise<void> {
+  @Post(Routes.Auth.Register)
+  async register(@Body() user: CreateUserDto): Promise<void> {
     await this.usersService.create(user);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch(Routes.Users.ChangePassword)
+  @Patch(Routes.Auth.ChangePassword)
   async changePassword(
     @Request() req: AuthenticatedRequest,
     @Body() changePasswordDto: ChangePasswordDto,
