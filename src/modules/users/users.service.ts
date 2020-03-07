@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
-import { createHash } from '../util/hash.util';
-import { RefreshTokenService } from './../refresh-token/refresh-token.service';
+import { createHash } from '../../util/hash.util';
+import { RefreshTokenService } from '../refresh-token/refresh-token.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';

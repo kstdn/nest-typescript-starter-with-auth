@@ -12,12 +12,12 @@ import {
   Request as ExpressRequest,
   Response as ExpressResponse,
 } from 'express';
-import { EnvVariables } from '../env.variables';
+import { EnvVariables } from '../../env.variables';
 import { ChangePasswordDto } from '../users/dto/change-password.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
-import { EnvDefaults } from './../env.defaults';
-import { Routes } from './../routes';
+import { EnvDefaults } from '../../env.defaults';
+import { Routes } from '../../routes';
 import { AuthService } from './auth.service';
 import { AuthenticatedRequest } from './dto/authenticated-request.dto';
 import { LoginRequestDto } from './dto/login-request.dto';
