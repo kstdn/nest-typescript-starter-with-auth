@@ -7,8 +7,12 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   VersionColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { RefreshToken } from '../../refresh-token/entities/refresh-token.entity';
+import { Permission } from './permission.entity';
+import { Role } from './role.entity';
 
 @Entity()
 export class User {
@@ -43,6 +47,14 @@ export class User {
     refreshToken => refreshToken.user,
   )
   refreshTokens: Promise<RefreshToken[]>;
+
+  @ManyToMany(() => Permission)
+  @JoinTable()
+  permissions: Promise<Permission[]>;
+
+  @ManyToMany(() => Role)
+  @JoinTable()
+  roles: Promise<Role[]>;
 
   @CreateDateColumn()
   created: Date;
