@@ -20,8 +20,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "compile-migrations": "rimraf migrations/dist && tsc -p tsconfig.migrations.json",
-    "generate-migration": "typeorm migration:generate -n Migration",
-    "run-pending-migrations": "npm run compile-migrations && typeorm migration:run",
+    "generate-migration": "npm run build && typeorm migration:generate -n Migration",
+    "run-pending-migrations": "npm run compile-migrations && typeorm migration:run --transaction=each",
     "revert-last-migration": "typeorm migration:revert"
   },
   "dependencies": {
