@@ -14,7 +14,26 @@ Includes:
 - /refresh-token
 - /change-password
 
-### Migration scripts
+### Migrations
+
+- npm scripts to run migrations
+
+In the folder 'migrations' you will find:
+- initial migration (will create the database tables)
+- initial seed (will seed the database with example data: new user with username 'admin' and password 'admin' and role 'admin')
+
+You can run these by executing: 
+```bash
+npm run run-pending-migrations
+```
+
+Both of these files could be safely deleted if you don't need to use them.
+
+A new migration could then be generated using:
+
+```bash
+npm run generate-migration
+```
 
 ## Installation
 
