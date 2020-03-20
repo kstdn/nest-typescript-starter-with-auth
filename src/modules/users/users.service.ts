@@ -64,4 +64,15 @@ export class UsersService {
   delete(id: number): Promise<DeleteResult> {
     return this.usersRepository.delete(id);
   }
+
+  async getAllUserPermissions(id: number): Promise<string[]> {
+    const permissions: {name: string}[] = await this.usersRepository.createQueryBuilder('user')
+    .leftJoin('user.roles', 'role')
+    .leftJoin('role.permissions', 'permission')
+    .where('user.id = :id', { id })
+    .select('permission.name', 'name')
+    .getRawMany();
+
+    return permissions.map(p => p.name);
+  }
 }
