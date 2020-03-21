@@ -12,15 +12,17 @@ import {
   Request as ExpressRequest,
   Response as ExpressResponse,
 } from 'express';
+import { GetUser } from 'src/decorators/get-user.decorator';
+import { DeleteResult } from 'typeorm';
 import { EnvDefaults } from '../../env.defaults';
 import { EnvVariables } from '../../env.variables';
 import { Routes } from '../../routes';
 import { ChangePasswordDto } from '../users/dto/change-password.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { AccessTokenDto } from './dto/access-token.dto';
-import { AuthenticatedRequest } from './dto/authenticated-request.dto';
 import { LoginRequestDto } from './dto/login-request.dto';
 import { RefreshTokenDto, refreshTokenKey } from './dto/refresh-token.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -43,26 +45,26 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Patch(Routes.Auth.ChangePassword)
   async changePassword(
-    @Request() req: AuthenticatedRequest,
+    @GetUser() user: User,
     @Body() changePasswordDto: ChangePasswordDto,
   ): Promise<void> {
-    await this.usersService.changePassword(req.user.id, changePasswordDto);
+    return this.usersService.changePassword(user.id, changePasswordDto);
   }
 
   @UseGuards(LocalAuthGuard)
   @Post(Routes.Auth.Login)
   async login(
     @Body() credentials: LoginRequestDto,
-    @Request() req: AuthenticatedRequest,
+    @GetUser() user: User,
     @Res() res: ExpressResponse,
   ): Promise<ExpressResponse> {
     // If we reach this method, this means we passed the username/password auth check
 
     const accessToken: AccessTokenDto = await this.authService.generateAccessTokenDto(
-      req.user.id,
+      user.id,
     );
     const refreshToken: RefreshTokenDto = await this.authService.generateRefreshTokenDto(
-      req.user.id,
+      user.id,
     );
 
     this.setRefreshTokenCookie(res, refreshToken);
@@ -94,8 +96,8 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post(Routes.Auth.Logout)
-  async logout(@Request() req: AuthenticatedRequest): Promise<void> {
-    await this.authService.logout(req.user.id);
+  async logout(@GetUser() user: User): Promise<DeleteResult> {
+    return this.authService.logout(user.id);
   }
 
   private setRefreshTokenCookie(
