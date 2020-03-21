@@ -1,16 +1,15 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, EntityManager } from 'typeorm';
+import { DeleteResult, EntityManager, Repository, getManager } from 'typeorm';
 import { RefreshToken } from './entities/refresh-token.entity';
 
 export class RefreshTokenService {
   constructor(
     @InjectRepository(RefreshToken)
-    private readonly em: EntityManager
+    private readonly refreshTokenRepository: Repository<RefreshToken>
   ) {}
 
   async find(userId: number): Promise<RefreshToken> {
-    return await this.em
-      .getRepository(RefreshToken)
+    return await this.refreshTokenRepository
       .createQueryBuilder('refreshToken')
       .where('refreshToken.userId = :id', { id: userId })
       .orderBy('created', 'DESC')
@@ -21,12 +20,12 @@ export class RefreshTokenService {
     userId: number,
     entityManager?: EntityManager,
   ): Promise<DeleteResult> {
-    const em: EntityManager = entityManager ?? this.em;
+    const em: EntityManager = entityManager ?? getManager();
     return em
       .getRepository(RefreshToken)
-      .createQueryBuilder('refreshToken')
+      .createQueryBuilder()
       .delete()
-      .where('refreshToken.userId = :id', { id: userId })
+      .where('"userId" = :id', { id: userId })
       .execute();
   }
 }
