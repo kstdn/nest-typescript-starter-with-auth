@@ -70,12 +70,7 @@ export class AuthService {
 
     await getManager().transaction(async transactionalEntityManager => {
       // Delete the user's old refresh tokens, if any
-      await transactionalEntityManager
-        .getRepository(RefreshToken)
-        .createQueryBuilder()
-        .delete()
-        .where('"userId" = :id', { id: userId })
-        .execute();
+      await this.refreshTokenService.invalidateRefreshToken(userId, transactionalEntityManager);
 
       // Create a new refresh token
       const newRefreshToken: Partial<RefreshToken> = {
@@ -93,7 +88,8 @@ export class AuthService {
     return refreshTokenValue;
   }
 
-  invalidateRefreshToken(userId: number): Promise<DeleteResult> {
+  logout(userId: number): Promise<DeleteResult> {
     return this.refreshTokenService.invalidateRefreshToken(userId);
   }
+
 }

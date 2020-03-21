@@ -95,7 +95,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post(Routes.Auth.Logout)
   async logout(@Request() req: AuthenticatedRequest): Promise<void> {
-    await this.authService.invalidateRefreshToken(req.user.id);
+    await this.authService.logout(req.user.id);
   }
 
   private setRefreshTokenCookie(
