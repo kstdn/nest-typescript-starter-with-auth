@@ -65,14 +65,26 @@ export class UsersService {
     return this.usersRepository.delete(id);
   }
 
-  async getAllUserPermissions(id: number): Promise<string[]> {
-    const permissions: {name: string}[] = await this.usersRepository.createQueryBuilder('user')
-    .leftJoin('user.roles', 'role')
-    .leftJoin('role.permissions', 'permission')
-    .where('user.id = :id', { id })
-    .select('permission.name', 'name')
-    .getRawMany();
+  async getAllUserRoleNames(id: number): Promise<string[]> {
+    const roles: { name: string }[] = await this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.roles', 'role')
+      .where('user.id = :id', { id })
+      .select('role.name', 'name')
+      .getRawMany();
 
-    return permissions.map(p => p.name);
+    return roles.map((r): string => r.name);
+  }
+
+  async getAllUserPermissionNames(id: number): Promise<string[]> {
+    const permissions: { name: string }[] = await this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.roles', 'role')
+      .leftJoin('role.permissions', 'permission')
+      .where('user.id = :id', { id })
+      .select('permission.name', 'name')
+      .getRawMany();
+
+    return permissions.map((p): string => p.name);
   }
 }
