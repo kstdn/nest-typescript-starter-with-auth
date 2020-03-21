@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getManager, Repository } from 'typeorm';
+import { DeleteResult, getManager, Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { RefreshToken } from '../refresh-token/entities/refresh-token.entity';
-import { UsersService } from '../users/users.service';
 import { createHash, doesHashMatch } from '../../util/hash.util';
+import { RefreshToken } from '../refresh-token/entities/refresh-token.entity';
 import { RefreshTokenService } from '../refresh-token/refresh-token.service';
 import { User } from '../users/entities/user.entity';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { UsersService } from '../users/users.service';
 import { AccessTokenDto } from './dto/access-token.dto';
 import { JWTPayloadDto } from './dto/jwt-payload.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Injectable()
 export class AuthService {
@@ -47,25 +47,25 @@ export class AuthService {
 
     const payload: JWTPayloadDto = { username: user.username, sub: user.id };
     return {
-      access_token: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload),
     };
   }
 
   async generateRefreshTokenDto(userId: number): Promise<RefreshTokenDto> {
     return {
-      user_id: userId,
-      refresh_token: await this.generateRefreshToken(userId),
+      userId: userId,
+      refreshToken: await this.generateRefreshToken(userId),
     };
   }
 
   async getExistingRefreshTokenDto(userId: number): Promise<RefreshTokenDto> {
     return {
-      user_id: userId,
-      refresh_token: (await this.refreshTokenService.find(userId)).value,
+      userId: userId,
+      refreshToken: (await this.refreshTokenService.find(userId)).value,
     };
   }
 
-  async generateRefreshToken(userId: number) {
+  async generateRefreshToken(userId: number): Promise<string> {
     const refreshTokenValue: string = uuidv4();
 
     await getManager().transaction(async transactionalEntityManager => {
@@ -93,7 +93,7 @@ export class AuthService {
     return refreshTokenValue;
   }
 
-  invalidateRefreshToken(userId: number) {
+  invalidateRefreshToken(userId: number): Promise<DeleteResult> {
     return this.refreshTokenService.invalidateRefreshToken(userId);
   }
 }

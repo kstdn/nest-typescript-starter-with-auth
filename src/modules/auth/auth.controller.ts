@@ -81,10 +81,10 @@ export class AuthController {
     const refreshTokenDto: RefreshTokenDto = req.cookies[refreshTokenKey];
 
     const accessToken: AccessTokenDto = await this.authService.generateAccessTokenDto(
-      refreshTokenDto.user_id,
+      refreshTokenDto.userId,
     );
     const newRefreshToken: RefreshTokenDto = await this.authService.generateRefreshTokenDto(
-      refreshTokenDto.user_id,
+      refreshTokenDto.userId,
     );
 
     this.setRefreshTokenCookie(res, newRefreshToken);

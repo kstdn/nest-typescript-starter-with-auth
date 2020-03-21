@@ -15,8 +15,8 @@ export class RefreshTokenGuard implements CanActivate {
     }
 
     return this.authService.validateRefreshToken(
-      refreshTokenDto.user_id,
-      refreshTokenDto.refresh_token,
+      refreshTokenDto.userId,
+      refreshTokenDto.refreshToken,
     );
   }
 }
