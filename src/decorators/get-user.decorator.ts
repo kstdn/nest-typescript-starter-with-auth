@@ -1,8 +1,7 @@
-import { createParamDecorator } from '@nestjs/common';
-import { AuthenticatedRequest } from 'src/modules/auth/dto/authenticated-request.dto';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 export const GetUser = createParamDecorator(
-  (data: unknown, request: AuthenticatedRequest) => {
-    return request.user;
+  (data: unknown, context: ExecutionContext) => {
+    return context.switchToHttp().getRequest().user;
   },
 );
