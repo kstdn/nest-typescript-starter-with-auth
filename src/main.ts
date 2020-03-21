@@ -6,7 +6,7 @@ import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { EnvDefaults } from './env.defaults';
 import { EnvVariables } from './env.variables';
-import { exceptionFactory } from './exception.factory';
+import { validationExceptionFactory } from './exception.factory';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -18,7 +18,7 @@ async function bootstrap(): Promise<void> {
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.useGlobalPipes(
     new ValidationPipe({
-      exceptionFactory,
+      exceptionFactory: validationExceptionFactory,
     }),
   );
 
