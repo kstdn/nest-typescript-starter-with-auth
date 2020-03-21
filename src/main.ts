@@ -8,7 +8,7 @@ import { EnvDefaults } from './env.defaults';
 import { EnvVariables } from './env.variables';
 import { exceptionFactory } from './exception.factory';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { cors: true });
 
   // Config

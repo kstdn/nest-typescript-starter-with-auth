@@ -7,10 +7,10 @@ export const Routes = {
     Login: 'login',
     RefreshToken: 'refresh-token',
     Logout: 'logout',
-    ChangePassword: 'change-password'
+    ChangePassword: 'change-password',
   },
 
   Users: {
-    Root: 'users'
+    Root: 'users',
   },
 };

@@ -13,14 +13,14 @@ export class UsernameDoesNotExistConstraint
   implements ValidatorConstraintInterface {
   constructor(private readonly usersService: UsersService) {}
 
-  async validate(username: any) {
+  async validate(username: any): Promise<boolean> {
     const user = await this.usersService.findOneByUsername(username);
     return !user;
   }
 }
 
 export function UsernameDoesNotExist(validationOptions?: ValidationOptions) {
-  return function(object: Record<string, any>, propertyName: string) {
+  return function(object: Record<string, any>, propertyName: string): void {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,

@@ -12,13 +12,14 @@ import {
   Request as ExpressRequest,
   Response as ExpressResponse,
 } from 'express';
+import { EnvDefaults } from '../../env.defaults';
 import { EnvVariables } from '../../env.variables';
+import { Routes } from '../../routes';
 import { ChangePasswordDto } from '../users/dto/change-password.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
-import { EnvDefaults } from '../../env.defaults';
-import { Routes } from '../../routes';
 import { AuthService } from './auth.service';
+import { AccessTokenDto } from './dto/access-token.dto';
 import { AuthenticatedRequest } from './dto/authenticated-request.dto';
 import { LoginRequestDto } from './dto/login-request.dto';
 import { RefreshTokenDto, refreshTokenKey } from './dto/refresh-token.dto';
@@ -54,10 +55,13 @@ export class AuthController {
     @Body() credentials: LoginRequestDto,
     @Request() req: AuthenticatedRequest,
     @Res() res: ExpressResponse,
-  ) {
+  ): Promise<ExpressResponse> {
     // If we reach this method, this means we passed the username/password auth check
 
-    const { accessToken, refreshToken } = await this.generateTokens(
+    const accessToken: AccessTokenDto = await this.authService.generateAccessTokenDto(
+      req.user.id,
+    );
+    const refreshToken: RefreshTokenDto = await this.authService.generateRefreshTokenDto(
       req.user.id,
     );
 
@@ -71,16 +75,19 @@ export class AuthController {
   async refreshToken(
     @Request() req: ExpressRequest,
     @Res() res: ExpressResponse,
-  ) {
+  ): Promise<ExpressResponse> {
     // If we reach this method, this means we passed the refresh token validity check
 
     const refreshTokenDto: RefreshTokenDto = req.cookies[refreshTokenKey];
 
-    const { accessToken, refreshToken } = await this.generateTokens(
+    const accessToken: AccessTokenDto = await this.authService.generateAccessTokenDto(
+      refreshTokenDto.user_id,
+    );
+    const newRefreshToken: RefreshTokenDto = await this.authService.generateRefreshTokenDto(
       refreshTokenDto.user_id,
     );
 
-    this.setRefreshTokenCookie(res, refreshToken);
+    this.setRefreshTokenCookie(res, newRefreshToken);
 
     return res.send(accessToken);
   }
@@ -91,17 +98,10 @@ export class AuthController {
     await this.authService.invalidateRefreshToken(req.user.id);
   }
 
-  private async generateTokens(userId: number) {
-    return {
-      accessToken: await this.authService.generateAccessTokenDto(userId),
-      refreshToken: await this.authService.generateRefreshTokenDto(userId),
-    };
-  }
-
   private setRefreshTokenCookie(
     res: ExpressResponse,
     refreshToken: RefreshTokenDto,
-  ) {
+  ): void {
     res.cookie(refreshTokenKey, refreshToken, {
       httpOnly: true,
       maxAge: this.config.get(

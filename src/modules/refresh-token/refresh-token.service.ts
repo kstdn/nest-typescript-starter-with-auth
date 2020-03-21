@@ -10,17 +10,17 @@ export class RefreshTokenService {
 
   async find(userId: number): Promise<RefreshToken> {
     return await this.refreshTokenRepository
-      .createQueryBuilder()
-      .where('"userId" = :id', { id: userId })
+      .createQueryBuilder('refreshToken')
+      .where('refreshToken.userId = :id', { id: userId })
       .orderBy('created', 'DESC')
       .getOne();
   }
 
   invalidateRefreshToken(userId: number): Promise<DeleteResult> {
     return this.refreshTokenRepository
-      .createQueryBuilder()
+      .createQueryBuilder('refreshToken')
       .delete()
-      .where('"userId" = :id', { id: userId })
+      .where('refreshToken.userId = :id', { id: userId })
       .execute();
   }
 }

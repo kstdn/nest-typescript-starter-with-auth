@@ -11,7 +11,7 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 
-const jwtValidityInMs = (config: ConfigService) => {
+const jwtValidityInMs = (config: ConfigService): number => {
   return config.get(
     EnvVariables.JwtValidityInMs,
     EnvDefaults[EnvVariables.JwtValidityInMs],

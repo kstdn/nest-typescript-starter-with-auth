@@ -1,6 +1,6 @@
 export const matchRoles = (
-    requiredRoles: string[],
-    roleNames: string[],
+  requiredRoles: string[],
+  roleNames: string[],
 ): boolean => {
-    return roleNames.some((r): boolean => requiredRoles.includes(r));
-}
+  return roleNames.some((r): boolean => requiredRoles.includes(r));
+};

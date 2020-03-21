@@ -8,7 +8,7 @@ export function EqualsTo<T>(
   property: keyof T,
   validationOptions?: ValidationOptions,
 ) {
-  return function(object: Record<string, any>, propertyName: string) {
+  return function(object: Record<string, any>, propertyName: string): void {
     registerDecorator({
       name: 'equalsTo',
       target: object.constructor,
@@ -19,7 +19,10 @@ export function EqualsTo<T>(
         ...validationOptions,
       },
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(
+          value: any,
+          args: ValidationArguments,
+        ): boolean | Promise<boolean> {
           const [relatedPropertyName] = args.constraints;
           const relatedValue = (args.object as any)[relatedPropertyName];
           return value === relatedValue;

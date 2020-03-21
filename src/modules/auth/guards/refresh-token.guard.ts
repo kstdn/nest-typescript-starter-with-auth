@@ -4,7 +4,7 @@ import { RefreshTokenDto, refreshTokenKey } from '../dto/refresh-token.dto';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
