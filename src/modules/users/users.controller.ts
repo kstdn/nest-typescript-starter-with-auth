@@ -25,7 +25,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @UseInterceptors(ClassSerializerInterceptor)
-  @Get('self')
+  @Get(Routes.Users.Self)
   async getOwnProfile(@GetUser() user: User): Promise<User> {
     return user;
   }
