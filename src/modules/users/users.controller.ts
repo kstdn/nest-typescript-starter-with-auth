@@ -1,9 +1,9 @@
 import { ClassSerializerInterceptor, Controller, Get, NotFoundException, Param, UseInterceptors } from '@nestjs/common';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
-import { Authorize } from 'src/modules/permissions/decorators/authorize.decorator';
-import { ReadAny, ReadOwn } from 'src/modules/permissions/resources/actions';
+import { Authorize } from 'src/modules/authorization/decorators/authorize.decorator';
+import { ReadAny, ReadOwn } from 'src/modules/authorization/resources/operations';
 import { Routes } from '../../routes';
-import { Resource } from '../permissions/resources/resource';
+import { Resource } from '../authorization/resources/resource';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 

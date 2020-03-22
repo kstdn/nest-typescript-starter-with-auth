@@ -2,8 +2,8 @@ import { Exclude } from 'class-transformer';
 import { BaseDBEntity } from 'src/common/entities/base.entity';
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { RefreshToken } from '../../refresh-token/entities/refresh-token.entity';
-import { ResourcePermissionToUser } from '../../permissions/entities/permission-to-user.entity';
-import { Role } from '../../permissions/entities/role.entity';
+import { ResourcePermissionToUser } from '../../authorization/entities/permission-to-user.entity';
+import { Role } from '../../authorization/entities/role.entity';
 
 @Entity()
 export class User extends BaseDBEntity {

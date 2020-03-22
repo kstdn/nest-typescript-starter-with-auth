@@ -1,9 +1,9 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { permissionsKey } from 'src/modules/permissions/decorators/permissions.decorator';
+import { permissionsKey } from 'src/modules/authorization/decorators/permissions.decorator';
 import { User } from 'src/modules/users/entities/user.entity';
 import { UsersService } from 'src/modules/users/users.service';
-import { ResourceActionPair } from 'src/modules/permissions/resources/actions';
+import { ResourceOperationPair } from "src/modules/authorization/resources/resource-operation-pair";
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -13,7 +13,7 @@ export class PermissionsGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const metadata = this.reflector.get<ResourceActionPair>(
+    const metadata = this.reflector.get<ResourceOperationPair>(
       permissionsKey,
       context.getHandler(),
     );
@@ -26,8 +26,8 @@ export class PermissionsGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user: User = request.user;
 
-    // For each resource-action pair, we check if access should be allowed
-    for (const [resource, action] of metadata) {
+    // For each resource-operation pair, we check if access should be allowed
+    for (const [resource, operation] of metadata) {
       // We try to find permissionToUser for the resource
       const permissionToUser = await this.usersService.getResourcePermissionToUser(
         user.id,
@@ -35,21 +35,21 @@ export class PermissionsGuard implements CanActivate {
       );
 
       // If no permissionToUser is found for the resource
-      // or the value it has for the action is false,
+      // or the value it has for the operation is false,
       // we continue, because we may find a permissionToUser or 'true' value for some of
-      // the next resource-action pairs
-      if (!permissionToUser || !permissionToUser[action]) {
+      // the next resource-operation pairs
+      if (!permissionToUser || !permissionToUser[operation]) {
         continue;
       }
 
-      // If a permissionToUser is found and the value it has for the action is true,
+      // If a permissionToUser is found and the value it has for the operation is true,
       // we allow access
       return true;
     }
 
     // If we reach this point, this means that no
     // permissionToUser with 'true' value for any
-    // of the actions and resources was found and access should be denied
+    // of the operations and resources was found and access should be denied
     return false;
   }
 }
