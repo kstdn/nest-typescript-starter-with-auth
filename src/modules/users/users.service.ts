@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, Repository, getManager } from 'typeorm';
 import { createHash } from '../../util/hash.util';
 import { RefreshTokenService } from '../refresh-token/refresh-token.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
+import { ResourcePermissionToUser } from '../permissions/entities/permission-to-user.entity';
+import { BasePermissionEntity } from '../permissions/entities/base-permission.entity';
+import { ResourcePermissionToRole } from '../permissions/entities/permission-to-role.entity';
 
 @Injectable()
 export class UsersService {
@@ -76,15 +79,16 @@ export class UsersService {
     return roles.map((r): string => r.name);
   }
 
-  async getAllUserPermissionNames(id: number): Promise<string[]> {
-    const permissions: { name: string }[] = await this.usersRepository
-      .createQueryBuilder('user')
-      .leftJoin('user.roles', 'role')
-      .leftJoin('role.permissions', 'permission')
-      .where('user.id = :id', { id })
-      .select('permission.name', 'name')
-      .getRawMany();
+  async getResourcePermissionToUser(id: string, resource: string): Promise<BasePermissionEntity> {
 
-    return permissions.map((p): string => p.name);
+    return getManager()
+    .getRepository(ResourcePermissionToRole)
+    .createQueryBuilder('resourcePermission')
+    .leftJoin('resourcePermission.resource', 'resource')
+    .leftJoin('resourcePermission.role', 'role')
+    .leftJoin('role.users', 'user')
+    .where('"user"."id"::VARCHAR LIKE :id', { id: `%${id}%` })
+    .andWhere('resource.name LIKE :resource', { resource: `%${resource}%` })
+    .getOne();
   }
 }
