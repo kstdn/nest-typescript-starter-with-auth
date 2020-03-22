@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, getManager, Repository } from 'typeorm';
 import { createHash } from '../../common/util/hash.util';
 import { BasePermissionEntity } from '../authorization/entities/base-permission.entity';
-import { ResourcePermissionToRole } from '../authorization/entities/permission-to-role.entity';
+import { ResourcePermissionToRole } from '../authorization/entities/resource-permission.entity';
 import { RefreshTokenService } from '../refresh-token/refresh-token.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';

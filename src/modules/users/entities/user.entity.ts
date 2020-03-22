@@ -2,7 +2,7 @@ import { Exclude } from 'class-transformer';
 import { BaseDBEntity } from 'src/common/entities/base.entity';
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { RefreshToken } from '../../refresh-token/entities/refresh-token.entity';
-import { ResourcePermissionToUser } from '../../authorization/entities/permission-to-user.entity';
+import { ResourcePermissionToUser } from '../../authorization/entities/resource-permission.entity';
 import { Role } from '../../authorization/entities/role.entity';
 
 @Entity()

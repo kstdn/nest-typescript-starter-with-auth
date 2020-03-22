@@ -17,7 +17,7 @@ export class Seed1583676460270 implements MigrationInterface {
         const adminUser = (await getRepository("user").find()).find(user => user['username'] === "admin");
         
         // Create the resource permission and assign it to the admin role
-        await getRepository("resource_permission_to_role").save({
+        await getRepository("resource_permission").save({
             resource: profileResource,
             role: adminRole,
             readAny: true

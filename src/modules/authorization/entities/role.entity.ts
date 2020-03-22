@@ -1,6 +1,6 @@
 import { BaseDBEntity } from 'src/common/entities/base.entity';
 import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
-import { ResourcePermissionToRole } from './permission-to-role.entity';
+import { ResourcePermissionToRole } from './resource-permission.entity';
 import { User } from '../../users/entities/user.entity';
 
 @Entity()
