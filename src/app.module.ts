@@ -4,8 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
-import { EmailDoesNotExistConstraint } from './validators/email-does-not-exist';
-import { UsernameDoesNotExistConstraint } from './validators/username-does-not-exist';
+import { EmailDoesNotExistConstraint } from './common/validators/email-does-not-exist';
+import { UsernameDoesNotExistConstraint } from './common/validators/username-does-not-exist';
 
 @Module({
   imports: [

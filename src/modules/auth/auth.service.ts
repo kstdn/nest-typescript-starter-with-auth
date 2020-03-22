@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, getManager, Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { createHash, doesHashMatch } from '../../util/hash.util';
+import { createHash, doesHashMatch } from '../../common/util/hash.util';
 import { RefreshToken } from '../refresh-token/entities/refresh-token.entity';
 import { RefreshTokenService } from '../refresh-token/refresh-token.service';
 import { User } from '../users/entities/user.entity';

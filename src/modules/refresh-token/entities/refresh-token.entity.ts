@@ -1,4 +1,4 @@
-import { BaseDBEntity } from 'src/entities/base.entity';
+import { BaseDBEntity } from 'src/common/entities/base.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 

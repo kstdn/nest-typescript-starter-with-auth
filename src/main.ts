@@ -6,7 +6,7 @@ import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { EnvDefaults } from './env.defaults';
 import { EnvVariables } from './env.variables';
-import { validationExceptionFactory } from './exception.factory';
+import { validationExceptionFactory } from './common/exceptions/exception.factory';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { cors: true });

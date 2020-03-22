@@ -1,5 +1,5 @@
 import { ClassSerializerInterceptor, Controller, Get, NotFoundException, Param, UseInterceptors } from '@nestjs/common';
-import { GetUser } from 'src/decorators/get-user.decorator';
+import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { Authorize } from 'src/modules/permissions/decorators/authorize.decorator';
 import { ReadAny, ReadOwn } from 'src/modules/permissions/resources/actions';
 import { Routes } from '../../routes';

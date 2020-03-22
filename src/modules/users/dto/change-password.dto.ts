@@ -1,5 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
-import { EqualsTo } from '../../../validators/equals-to';
+import { EqualsTo } from '../../../common/validators/equals-to';
 
 export class ChangePasswordDto {
   @IsNotEmpty()

@@ -13,7 +13,7 @@ import {
   Response as ExpressResponse,
 } from 'express';
 import { Authorize } from 'src/modules/permissions/decorators/authorize.decorator';
-import { GetUser } from 'src/decorators/get-user.decorator';
+import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { UpdateOwn } from 'src/modules/permissions/resources/actions';
 import { Resource } from 'src/modules/permissions/resources/resource';
 import { DeleteResult } from 'typeorm';

@@ -1,4 +1,4 @@
-import { BaseDBEntity } from 'src/entities/base.entity';
+import { BaseDBEntity } from 'src/common/entities/base.entity';
 import { Column } from 'typeorm';
 
 export class BasePermissionEntity extends BaseDBEntity {
