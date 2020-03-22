@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, getManager, Repository } from 'typeorm';
+import { Brackets, DeleteResult, getManager, Repository } from 'typeorm';
 import { createHash } from '../../common/util/hash.util';
-import { BasePermissionEntity } from '../authorization/entities/base-permission.entity';
-import { ResourcePermissionToRole } from '../authorization/entities/resource-permission.entity';
+import { ResourcePermission } from '../authorization/entities/resource-permission.entity';
 import { RefreshTokenService } from '../refresh-token/refresh-token.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -78,18 +77,27 @@ export class UsersService {
     return roles.map((r): string => r.name);
   }
 
-  async getResourcePermissionToUser(
+  async getResourcePermissions(
     id: string,
     resource: string,
-  ): Promise<BasePermissionEntity> {
+  ): Promise<ResourcePermission[]> {
     return getManager()
-      .getRepository(ResourcePermissionToRole)
+      .getRepository(ResourcePermission)
       .createQueryBuilder('resourcePermission')
-      .leftJoin('resourcePermission.resource', 'resource')
       .leftJoin('resourcePermission.role', 'role')
-      .leftJoin('role.users', 'user')
-      .where('"user"."id"::VARCHAR LIKE :id', { id: `%${id}%` })
-      .andWhere('resource.name LIKE :resource', { resource: `%${resource}%` })
-      .getOne();
+      .leftJoin('role.users', 'userWithRole')
+      .leftJoin('resourcePermission.user', 'userWithPermission')
+      .leftJoin('resourcePermission.resource', 'resource')
+      .where('resource.name LIKE :resource', { resource: `%${resource}%` })
+      .andWhere(
+        new Brackets(qb => {
+          qb.where('"userWithRole"."id"::VARCHAR LIKE :id', {
+            id: `%${id}%`,
+          }).orWhere('"userWithPermission"."id"::VARCHAR LIKE :id', {
+            id: `%${id}%`,
+          });
+        }),
+      )
+      .getMany();
   }
 }
