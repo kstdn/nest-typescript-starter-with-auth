@@ -12,7 +12,10 @@ import {
   Request as ExpressRequest,
   Response as ExpressResponse,
 } from 'express';
+import { Authorize } from 'src/modules/permissions/decorators/authorize.decorator';
 import { GetUser } from 'src/decorators/get-user.decorator';
+import { UpdateOwn } from 'src/modules/permissions/resources/actions';
+import { Resource } from 'src/modules/permissions/resources/resource';
 import { DeleteResult } from 'typeorm';
 import { EnvDefaults } from '../../env.defaults';
 import { EnvVariables } from '../../env.variables';
@@ -43,6 +46,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Authorize(UpdateOwn(Resource.Password))
   @Patch(Routes.Auth.ChangePassword)
   async changePassword(
     @GetUser() user: User,
