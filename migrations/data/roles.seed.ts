@@ -1,11 +1,9 @@
 export const RolesSeed = [
     {
-        id: 1,
         name: 'admin',
-        permissions: []
+        resourcePermissions: []
     }, {
-        id: 2,
         name: 'user',
-        permissions: []
+        resourcePermissions: []
     }
 ]
