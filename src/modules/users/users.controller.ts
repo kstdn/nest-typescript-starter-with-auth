@@ -13,7 +13,7 @@ export class UsersController {
 
   @Authorize(ReadOwn(Resource.Password), ReadOwn(Resource.Profile))
   @UseInterceptors(ClassSerializerInterceptor)
-  @Get(Routes.Users.Self)
+  @Get(Routes.Users.Me)
   async getOwnProfile(@GetUser() user: User): Promise<User> {
     return user;
   }

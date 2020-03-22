@@ -12,6 +12,6 @@ export const Routes = {
 
   Users: {
     Root: 'users',
-    Self: 'self',
+    Me: 'me',
   },
 };
