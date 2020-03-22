@@ -12,10 +12,10 @@ import {
   Request as ExpressRequest,
   Response as ExpressResponse,
 } from 'express';
-import { Authorize } from 'src/modules/permissions/decorators/authorize.decorator';
+import { Authorize } from 'src/modules/authorization/decorators/authorize.decorator';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
-import { UpdateOwn } from 'src/modules/permissions/resources/actions';
-import { Resource } from 'src/modules/permissions/resources/resource';
+import { UpdateOwn } from 'src/modules/authorization/resources/operations';
+import { Resource } from 'src/modules/authorization/resources/resource';
 import { DeleteResult } from 'typeorm';
 import { EnvDefaults } from '../../env.defaults';
 import { EnvVariables } from '../../env.variables';
@@ -24,30 +24,29 @@ import { ChangePasswordDto } from '../users/dto/change-password.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
-import { AuthService } from './auth.service';
+import { AuthenticationService } from './authentication.service';
 import { AccessTokenDto } from './dto/access-token.dto';
 import { LoginRequestDto } from './dto/login-request.dto';
 import { RefreshTokenDto, refreshTokenKey } from './dto/refresh-token.dto';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
+import { Authenticate } from './decorators/authenticate.decorator';
 
-@Controller(Routes.Auth.Root)
-export class AuthController {
+@Controller(Routes.Authentication.Root)
+export class AuthenticationController {
   constructor(
-    private readonly authService: AuthService,
+    private readonly authService: AuthenticationService,
     private readonly usersService: UsersService,
     private readonly config: ConfigService,
   ) {}
 
-  @Post(Routes.Auth.Register)
+  @Post(Routes.Authentication.Register)
   async register(@Body() user: CreateUserDto): Promise<void> {
     await this.usersService.create(user);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Authorize(UpdateOwn(Resource.Password))
-  @Patch(Routes.Auth.ChangePassword)
+  @Patch(Routes.Authentication.ChangePassword)
   async changePassword(
     @GetUser() user: User,
     @Body() changePasswordDto: ChangePasswordDto,
@@ -56,7 +55,7 @@ export class AuthController {
   }
 
   @UseGuards(LocalAuthGuard)
-  @Post(Routes.Auth.Login)
+  @Post(Routes.Authentication.Login)
   async login(
     @Body() credentials: LoginRequestDto,
     @GetUser() user: User,
@@ -77,7 +76,7 @@ export class AuthController {
   }
 
   @UseGuards(RefreshTokenGuard)
-  @Post(Routes.Auth.RefreshToken)
+  @Post(Routes.Authentication.RefreshToken)
   async refreshToken(
     @Request() req: ExpressRequest,
     @Res() res: ExpressResponse,
@@ -98,8 +97,8 @@ export class AuthController {
     return res.send(accessToken);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post(Routes.Auth.Logout)
+  @Authenticate()
+  @Post(Routes.Authentication.Logout)
   async logout(@GetUser() user: User): Promise<DeleteResult> {
     return this.authService.logout(user.id);
   }

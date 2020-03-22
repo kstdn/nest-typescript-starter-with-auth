@@ -1,8 +1,8 @@
 export const Routes = {
   Root: 'api',
 
-  Auth: {
-    Root: 'auth',
+  Authentication: {
+    Root: 'authentication',
     Register: 'register',
     Login: 'login',
     RefreshToken: 'refresh-token',

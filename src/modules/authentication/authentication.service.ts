@@ -13,7 +13,7 @@ import { JWTPayloadDto } from './dto/jwt-payload.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Injectable()
-export class AuthService {
+export class AuthenticationService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,

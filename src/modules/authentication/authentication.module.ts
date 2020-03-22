@@ -6,8 +6,8 @@ import { EnvVariables } from '../../env.variables';
 import { EnvDefaults } from '../../env.defaults';
 import { RefreshTokenModule } from '../refresh-token/refresh-token.module';
 import { UsersModule } from '../users/users.module';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { AuthenticationController } from './authentication.controller';
+import { AuthenticationService } from './authentication.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 
@@ -31,8 +31,8 @@ const jwtValidityInMs = (config: ConfigService): number => {
     }),
     RefreshTokenModule,
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
-  exports: [AuthService],
-  controllers: [AuthController],
+  providers: [AuthenticationService, LocalStrategy, JwtStrategy],
+  exports: [AuthenticationService],
+  controllers: [AuthenticationController],
 })
-export class AuthModule {}
+export class AuthenticationModule {}

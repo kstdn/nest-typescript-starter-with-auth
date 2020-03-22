@@ -1,10 +1,10 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { AuthService } from '../auth.service';
+import { AuthenticationService } from '../authentication.service';
 import { RefreshTokenDto, refreshTokenKey } from '../dto/refresh-token.dto';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthenticationService) {}
 
   canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
