@@ -8,7 +8,7 @@ export class RefreshTokenService {
     private readonly refreshTokenRepository: Repository<RefreshToken>
   ) {}
 
-  async find(userId: number): Promise<RefreshToken> {
+  async find(userId: string): Promise<RefreshToken> {
     return await this.refreshTokenRepository
       .createQueryBuilder('refreshToken')
       .where('refreshToken.userId = :id', { id: userId })
@@ -17,7 +17,7 @@ export class RefreshTokenService {
   }
 
   invalidateRefreshToken(
-    userId: number,
+    userId: string,
     entityManager?: EntityManager,
   ): Promise<DeleteResult> {
     const em: EntityManager = entityManager ?? getManager();

@@ -1,4 +1,4 @@
 export class JWTPayloadDto {
   username: string;
-  sub: number;
+  sub: string;
 }

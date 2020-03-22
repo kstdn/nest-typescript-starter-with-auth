@@ -1,33 +1,18 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { BaseDBEntity } from 'src/entities/base.entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
 @Entity()
-export class RefreshToken {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class RefreshToken extends BaseDBEntity {
   @Column()
   value: string;
 
   @Column()
-  userId: number;
+  userId: string;
 
   @ManyToOne(
     () => User,
     user => user.refreshTokens,
   )
   user: User;
-
-  @CreateDateColumn()
-  created: Date;
-
-  @UpdateDateColumn()
-  updated: Date;
 }

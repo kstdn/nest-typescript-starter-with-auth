@@ -1,24 +1,12 @@
 import { Exclude } from 'class-transformer';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-  VersionColumn,
-  ManyToMany,
-  JoinTable,
-} from 'typeorm';
+import { BaseDBEntity } from 'src/entities/base.entity';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { RefreshToken } from '../../refresh-token/entities/refresh-token.entity';
-import { Permission } from './permission.entity';
-import { Role } from './role.entity';
+import { ResourcePermissionToUser } from '../../permissions/entities/permission-to-user.entity';
+import { Role } from '../../permissions/entities/role.entity';
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class User extends BaseDBEntity {
   @Column({
     unique: true,
   })
@@ -39,29 +27,19 @@ export class User {
   @Column({ nullable: true })
   lastName: string;
 
-  @Column({ default: true })
-  isActive: boolean;
-
   @OneToMany(
     () => RefreshToken,
     refreshToken => refreshToken.user,
   )
   refreshTokens: Promise<RefreshToken[]>;
 
-  @ManyToMany(() => Permission)
-  @JoinTable()
-  permissions: Promise<Permission[]>;
+  @OneToMany(
+    type => ResourcePermissionToUser,
+    resourcePermissionToUser => resourcePermissionToUser.user,
+  )
+  resourcePermissions: ResourcePermissionToUser[];
 
-  @ManyToMany(() => Role)
+  @ManyToMany(() => Role, role => role.users)
   @JoinTable()
   roles: Promise<Role[]>;
-
-  @CreateDateColumn()
-  created: Date;
-
-  @UpdateDateColumn()
-  updated: Date;
-
-  @VersionColumn()
-  version: number;
 }

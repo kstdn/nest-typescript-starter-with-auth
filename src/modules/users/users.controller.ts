@@ -33,7 +33,7 @@ export class UsersController {
   @Roles('admin')
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
-  async getProfile(@Param('id', ParseIntPipe) id: number): Promise<User> {
+  async getProfile(@Param('id') id: string): Promise<User> {
     const user: User = await this.usersService.findOne(id);
     if (user) {
       return user;

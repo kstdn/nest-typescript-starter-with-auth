@@ -28,14 +28,14 @@ export class UsersService {
     return this.usersRepository.save(createdUser);
   }
 
-  async update(id: number, partialUser: Partial<User>): Promise<User> {
+  async update(id: string, partialUser: Partial<User>): Promise<User> {
     const user: User = await this.findOne(id);
     const updatedUser = { ...user, ...partialUser };
     return this.usersRepository.save(updatedUser);
   }
 
   async changePassword(
-    id: number,
+    id: string,
     changePasswordDto: ChangePasswordDto,
   ): Promise<void> {
     const user: User = await this.findOne(id);
@@ -57,7 +57,7 @@ export class UsersService {
     return this.usersRepository.findOne({ email });
   }
 
-  findOne(id: number): Promise<User> {
+  findOne(id: string): Promise<User> {
     return this.usersRepository.findOne(id);
   }
 

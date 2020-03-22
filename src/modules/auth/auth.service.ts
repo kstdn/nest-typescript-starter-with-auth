@@ -31,7 +31,7 @@ export class AuthService {
   }
 
   async validateRefreshToken(
-    userId: number,
+    userId: string,
     refreshTokenToValidate: string,
   ): Promise<boolean> {
     const refreshTokenFromDB = await this.refreshTokenService.find(userId);
@@ -42,7 +42,7 @@ export class AuthService {
     return await doesHashMatch(refreshTokenToValidate, refreshTokenFromDBValue);
   }
 
-  async generateAccessTokenDto(userId: number): Promise<AccessTokenDto> {
+  async generateAccessTokenDto(userId: string): Promise<AccessTokenDto> {
     const user = await this.usersRepository.findOne(userId);
 
     const payload: JWTPayloadDto = { username: user.username, sub: user.id };
@@ -51,21 +51,21 @@ export class AuthService {
     };
   }
 
-  async generateRefreshTokenDto(userId: number): Promise<RefreshTokenDto> {
+  async generateRefreshTokenDto(userId: string): Promise<RefreshTokenDto> {
     return {
       userId: userId,
       refreshToken: await this.generateRefreshToken(userId),
     };
   }
 
-  async getExistingRefreshTokenDto(userId: number): Promise<RefreshTokenDto> {
+  async getExistingRefreshTokenDto(userId: string): Promise<RefreshTokenDto> {
     return {
       userId: userId,
       refreshToken: (await this.refreshTokenService.find(userId)).value,
     };
   }
 
-  async generateRefreshToken(userId: number): Promise<string> {
+  async generateRefreshToken(userId: string): Promise<string> {
     const refreshTokenValue: string = uuidv4();
 
     await getManager().transaction(async transactionalEntityManager => {
@@ -88,7 +88,7 @@ export class AuthService {
     return refreshTokenValue;
   }
 
-  logout(userId: number): Promise<DeleteResult> {
+  logout(userId: string): Promise<DeleteResult> {
     return this.refreshTokenService.invalidateRefreshToken(userId);
   }
 
