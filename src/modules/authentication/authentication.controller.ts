@@ -16,7 +16,6 @@ import { Authorize } from 'src/modules/authorization/decorators/authorize.decora
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { UpdateOwn } from 'src/modules/authorization/resources/operations';
 import { Resource } from 'src/modules/authorization/resources/resource';
-import { DeleteResult } from 'typeorm';
 import { EnvDefaults } from '../../env.defaults';
 import { EnvVariables } from '../../env.variables';
 import { Routes } from '../../routes';
@@ -99,8 +98,8 @@ export class AuthenticationController {
 
   @Authenticate()
   @Post(Routes.Authentication.Logout)
-  async logout(@GetUser() user: User): Promise<DeleteResult> {
-    return this.authService.logout(user.id);
+  async logout(@GetUser() user: User): Promise<void> {
+    await this.authService.logout(user.id);
   }
 
   private setRefreshTokenCookie(
