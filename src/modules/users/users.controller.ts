@@ -1,4 +1,4 @@
-import { ClassSerializerInterceptor, Controller, Get, NotFoundException, Param, UseInterceptors } from '@nestjs/common';
+import { ClassSerializerInterceptor, Controller, Get, NotFoundException, Param, UseInterceptors, ParseUUIDPipe } from '@nestjs/common';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { Authorize } from 'src/modules/authorization/decorators/authorize.decorator';
 import { ReadAny, ReadOwn } from 'src/modules/authorization/resources/operations';
@@ -21,7 +21,7 @@ export class UsersController {
   @Authorize(ReadAny(Resource.Profile))
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
-  async getProfile(@Param('id') id: string): Promise<User> {
+  async getProfile(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
     const user: User = await this.usersService.findOne(id);
     if (user) {
       return user;

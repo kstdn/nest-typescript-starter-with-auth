@@ -12,10 +12,11 @@ import {
   Request as ExpressRequest,
   Response as ExpressResponse,
 } from 'express';
-import { Authorize } from 'src/modules/authorization/decorators/authorize.decorator';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
+import { Authorize } from 'src/modules/authorization/decorators/authorize.decorator';
 import { UpdateOwn } from 'src/modules/authorization/resources/operations';
 import { Resource } from 'src/modules/authorization/resources/resource';
+import { envelopeData } from '../../common/util/envelope.util';
 import { EnvDefaults } from '../../env.defaults';
 import { EnvVariables } from '../../env.variables';
 import { Routes } from '../../routes';
@@ -24,12 +25,12 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { AuthenticationService } from './authentication.service';
+import { Authenticate } from './decorators/authenticate.decorator';
 import { AccessTokenDto } from './dto/access-token.dto';
 import { LoginRequestDto } from './dto/login-request.dto';
 import { RefreshTokenDto, refreshTokenKey } from './dto/refresh-token.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
-import { Authenticate } from './decorators/authenticate.decorator';
 
 @Controller(Routes.Authentication.Root)
 export class AuthenticationController {
@@ -71,7 +72,7 @@ export class AuthenticationController {
 
     this.setRefreshTokenCookie(res, refreshToken);
 
-    return res.send(accessToken);
+    return res.send(envelopeData(accessToken));
   }
 
   @UseGuards(RefreshTokenGuard)
@@ -93,7 +94,7 @@ export class AuthenticationController {
 
     this.setRefreshTokenCookie(res, newRefreshToken);
 
-    return res.send(accessToken);
+    return res.send(envelopeData(accessToken));
   }
 
   @Authenticate()
