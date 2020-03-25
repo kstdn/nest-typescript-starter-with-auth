@@ -5,6 +5,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { EnvVariables } from '../../../env.variables';
 import { User } from '../../users/entities/user.entity';
 import { UsersService } from '../../users/users.service';
+import { JWTPayloadDto } from '../dto/jwt-payload.dto';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -19,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any): Promise<User> {
-    return await this.usersService.findOne(payload.sub);
+  async validate(payload: JWTPayloadDto): Promise<User> {
+    return await this.usersService.findOneOrThrow(payload.sub);
   }
 }
