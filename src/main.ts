@@ -21,6 +21,7 @@ async function bootstrap(): Promise<void> {
   app.useGlobalPipes(
     new ValidationPipe({
       exceptionFactory: validationExceptionFactory,
+      whitelist: true
     }),
   );
 
