@@ -10,6 +10,20 @@ export const Routes = {
     ChangePassword: 'change-password',
   },
 
+  Authorization: {
+    Root: 'authorization',
+    Resources: 'resources',
+    Permissions: {
+      Root: 'permissions',
+      User: 'user',
+      Role: 'role'
+    },
+    Roles: {
+      Root: 'roles',
+      User: 'user',
+    },
+  },
+
   Users: {
     Root: 'users',
     Me: 'me',

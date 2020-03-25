@@ -1,5 +1,7 @@
 export enum Resource {
+  Resource = 'Resource',
   Password = 'Password',
-  Profile = 'Profile',
   User = 'User',
+  Role = 'Role',
+  Permission = 'Permission',
 }

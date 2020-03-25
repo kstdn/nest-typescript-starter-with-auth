@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, DeleteResult, getManager, Repository } from 'typeorm';
+import { Brackets, getManager, Repository } from 'typeorm';
+import { Exception } from '../../common/exceptions/exception.enum';
+import { whereIsActive } from '../../common/util/find-options.util';
 import { createHash } from '../../common/util/hash.util';
 import { ResourcePermission } from '../authorization/entities/resource-permission.entity';
 import { RefreshTokenService } from '../refresh-token/refresh-token.service';
@@ -30,7 +32,7 @@ export class UsersService {
   }
 
   async update(id: string, partialUser: Partial<User>): Promise<User> {
-    const user: User = await this.findOne(id);
+    const user: User = await this.findOneOrThrow(id);
     const updatedUser = { ...user, ...partialUser };
     return this.usersRepository.save(updatedUser);
   }
@@ -39,7 +41,7 @@ export class UsersService {
     id: string,
     changePasswordDto: ChangePasswordDto,
   ): Promise<void> {
-    const user: User = await this.findOne(id);
+    const user: User = await this.findOneOrThrow(id);
     user.passwordHash = await createHash(changePasswordDto.newPassword);
 
     await this.usersRepository.save(user);
@@ -47,23 +49,27 @@ export class UsersService {
   }
 
   findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+    return this.usersRepository.find(whereIsActive);
   }
 
   findOneByUsername(username: string): Promise<User> {
-    return this.usersRepository.findOne({ username });
+    return this.usersRepository.findOne({ username, isActive: true });
   }
 
   findOneByEmail(email: string): Promise<User> {
-    return this.usersRepository.findOne({ email });
+    return this.usersRepository.findOne({ email, isActive: true });
   }
 
-  findOne(id: string): Promise<User> {
-    return this.usersRepository.findOne(id);
+  async findOneOrThrow(id: string): Promise<User> {
+    return this.usersRepository.findOneOrFail(id, whereIsActive).catch(() => {
+      throw new NotFoundException(Exception.USER_NOT_FOUND);
+    });
   }
 
-  delete(id: number): Promise<DeleteResult> {
-    return this.usersRepository.delete(id);
+  async delete(id: string): Promise<User> {
+    const user = await this.findOneOrThrow(id);
+    user.isActive = false;
+    return user.save();
   }
 
   async getAllUserRoleNames(id: number): Promise<string[]> {

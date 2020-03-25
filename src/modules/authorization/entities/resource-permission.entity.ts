@@ -14,7 +14,7 @@ import { User } from '../../users/entities/user.entity';
 @TableInheritance({ column: { type: 'varchar', name: 'type' } })
 export class ResourcePermission extends BasePermissionEntity {
   @Column()
-  public resourceId: number;
+  public resourceId: string;
 
   @ManyToOne(type => Resource)
   public resource: Resource;
@@ -23,7 +23,7 @@ export class ResourcePermission extends BasePermissionEntity {
 @ChildEntity()
 export class ResourcePermissionToUser extends ResourcePermission {
   @Column()
-  public userId: number;
+  public userId: string;
 
   @ManyToOne(
     type => User,
@@ -35,7 +35,7 @@ export class ResourcePermissionToUser extends ResourcePermission {
 @ChildEntity()
 export class ResourcePermissionToRole extends ResourcePermission {
   @Column()
-  public roleId: number;
+  public roleId: string;
 
   @ManyToOne(
     type => Role,
