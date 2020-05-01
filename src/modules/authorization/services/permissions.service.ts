@@ -20,7 +20,7 @@ export class PermissionsService {
   ) {}
 
   findAll(): Promise<ResourcePermission[]> {
-    return ResourcePermission.find({relations: ['resource']});
+    return ResourcePermission.find({relations: ['resource', 'user', 'role']});
   }
 
   async findOneOrThrow(permissionId: string): Promise<ResourcePermission> {
