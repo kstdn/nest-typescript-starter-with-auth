@@ -16,7 +16,7 @@ import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { Authorize } from 'src/modules/authorization/decorators/authorize.decorator';
 import { UpdateOwn } from 'src/modules/authorization/resources/operations';
 import { Resource } from 'src/modules/authorization/resources/resource';
-import { envelopeData } from '../../common/util/envelope.util';
+import { splitJwtToken } from '../../common/util/jwt.util';
 import { EnvDefaults } from '../../env.defaults';
 import { EnvVariables } from '../../env.variables';
 import { Routes } from '../../routes';
@@ -26,9 +26,16 @@ import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { AuthenticationService } from './authentication.service';
 import { Authenticate } from './decorators/authenticate.decorator';
-import { AccessTokenDto } from './dto/access-token.dto';
+import {
+  accessTokenHeaderPayloadKey,
+  accessTokenSignatureKey,
+} from './dto/access-token.dto';
 import { LoginRequestDto } from './dto/login-request.dto';
-import { RefreshTokenDto, refreshTokenKey } from './dto/refresh-token.dto';
+import {
+  RefreshTokenDto,
+  refreshTokenKey,
+  refreshTokenPartialKey,
+} from './dto/refresh-token.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
 
@@ -63,16 +70,17 @@ export class AuthenticationController {
   ): Promise<ExpressResponse> {
     // If we reach this method, this means we passed the username/password auth check
 
-    const accessToken: AccessTokenDto = await this.authService.generateAccessTokenDto(
+    const accessToken: string = await this.authService.generateAccessToken(
       user.id,
     );
     const refreshToken: RefreshTokenDto = await this.authService.generateRefreshTokenDto(
       user.id,
     );
 
-    this.setRefreshTokenCookie(res, refreshToken);
+    this.setAccessTokenCookies(res, accessToken);
+    this.setRefreshTokenCookies(res, refreshToken);
 
-    return res.send(envelopeData(accessToken));
+    return res.send();
   }
 
   @UseGuards(RefreshTokenGuard)
@@ -85,16 +93,17 @@ export class AuthenticationController {
 
     const refreshTokenDto: RefreshTokenDto = req.cookies[refreshTokenKey];
 
-    const accessToken: AccessTokenDto = await this.authService.generateAccessTokenDto(
+    const accessToken: string = await this.authService.generateAccessToken(
       refreshTokenDto.userId,
     );
     const newRefreshToken: RefreshTokenDto = await this.authService.generateRefreshTokenDto(
       refreshTokenDto.userId,
     );
 
-    this.setRefreshTokenCookie(res, newRefreshToken);
+    this.setAccessTokenCookies(res, accessToken);
+    this.setRefreshTokenCookies(res, newRefreshToken);
 
-    return res.send(envelopeData(accessToken));
+    return res.send();
   }
 
   @Authenticate()
@@ -103,12 +112,63 @@ export class AuthenticationController {
     await this.authService.logout(user.id);
   }
 
-  private setRefreshTokenCookie(
+  private setAccessTokenCookies(
     res: ExpressResponse,
-    refreshToken: RefreshTokenDto,
+    accessToken: string,
   ): void {
-    res.cookie(refreshTokenKey, refreshToken, {
+    const splitAccessToken = splitJwtToken(accessToken);
+
+    // We send the header and payload as a normal cookie
+    // This way the user can read them via javascript
+    // It also allows us to logout the user on the client side
+    // by deleting this cookie
+    res.cookie(accessTokenHeaderPayloadKey, splitAccessToken.headerAndPayload, {
+      sameSite: true,
+      maxAge: this.config.get(
+        EnvVariables.JwtValidityInMs,
+        EnvDefaults[EnvVariables.JwtValidityInMs],
+      ),
+    });
+
+    // We send the signature as HttpOnly and SameSite cookie
+    res.cookie(accessTokenSignatureKey, splitAccessToken.signature, {
       httpOnly: true,
+      sameSite: true,
+      maxAge: this.config.get(
+        EnvVariables.JwtValidityInMs,
+        EnvDefaults[EnvVariables.JwtValidityInMs],
+      ),
+    });
+  }
+
+  private setRefreshTokenCookies(
+    res: ExpressResponse,
+    refreshTokenDto: RefreshTokenDto,
+  ): void {
+    const { refreshToken } = refreshTokenDto;
+    const refreshTokenDtoFirstPart = refreshToken.substr(0, 8);
+    const refreshTokenDtoSecondPart = refreshToken.substr(8);
+
+    // We send the partial refresh token as a regular cookie
+    // This way when we want to logout the user, we can delete this cookie
+    // and it will work even if the user is offline
+    res.cookie(refreshTokenPartialKey, refreshTokenDtoFirstPart, {
+      httpOnly: false,
+      sameSite: true,
+      maxAge: this.config.get(
+        EnvVariables.RefreshTokenValidityInMs,
+        EnvDefaults[EnvVariables.RefreshTokenValidityInMs],
+      ),
+    });
+
+    // We send the userId and the rest of the token as a HttpOnly cookie
+    const secureRefreshTokenDto: RefreshTokenDto = {
+      userId: refreshTokenDto.userId,
+      refreshToken: refreshTokenDtoSecondPart,
+    };
+    res.cookie(refreshTokenKey, secureRefreshTokenDto, {
+      httpOnly: true,
+      sameSite: true,
       maxAge: this.config.get(
         EnvVariables.RefreshTokenValidityInMs,
         EnvDefaults[EnvVariables.RefreshTokenValidityInMs],

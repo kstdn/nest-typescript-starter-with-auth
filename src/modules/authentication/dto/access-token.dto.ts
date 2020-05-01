@@ -1,4 +1,2 @@
-export const accessTokenKey = 'access_token';
-export class AccessTokenDto {
-  accessToken: string;
-}
+export const accessTokenHeaderPayloadKey = 'access_token_header_payload';
+export const accessTokenSignatureKey = 'access_token_signature';

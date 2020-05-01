@@ -8,7 +8,6 @@ import { RefreshToken } from '../refresh-token/entities/refresh-token.entity';
 import { RefreshTokenService } from '../refresh-token/refresh-token.service';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
-import { AccessTokenDto } from './dto/access-token.dto';
 import { JWTPayloadDto } from './dto/jwt-payload.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 
@@ -42,13 +41,11 @@ export class AuthenticationService {
     return await doesHashMatch(refreshTokenToValidate, refreshTokenFromDBValue);
   }
 
-  async generateAccessTokenDto(userId: string): Promise<AccessTokenDto> {
+  async generateAccessToken(userId: string): Promise<string> {
     const user = await this.usersRepository.findOne(userId);
 
     const payload: JWTPayloadDto = { username: user.username, sub: user.id };
-    return {
-      accessToken: this.jwtService.sign(payload),
-    };
+    return this.jwtService.sign(payload);
   }
 
   async generateRefreshTokenDto(userId: string): Promise<RefreshTokenDto> {
@@ -70,7 +67,10 @@ export class AuthenticationService {
 
     await getManager().transaction(async transactionalEntityManager => {
       // Delete the user's old refresh tokens, if any
-      await this.refreshTokenService.invalidateRefreshToken(userId, transactionalEntityManager);
+      await this.refreshTokenService.invalidateRefreshToken(
+        userId,
+        transactionalEntityManager,
+      );
 
       // Create a new refresh token
       const newRefreshToken: Partial<RefreshToken> = {
@@ -91,5 +91,4 @@ export class AuthenticationService {
   logout(userId: string): Promise<DeleteResult> {
     return this.refreshTokenService.invalidateRefreshToken(userId);
   }
-
 }

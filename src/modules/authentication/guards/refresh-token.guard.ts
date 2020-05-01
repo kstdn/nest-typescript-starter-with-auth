@@ -1,6 +1,10 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthenticationService } from '../authentication.service';
-import { RefreshTokenDto, refreshTokenKey } from '../dto/refresh-token.dto';
+import {
+  RefreshTokenDto,
+  refreshTokenKey,
+  refreshTokenPartialKey,
+} from '../dto/refresh-token.dto';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
@@ -8,15 +12,16 @@ export class RefreshTokenGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
+    const refreshTokenFirstPart: string = req.cookies[refreshTokenPartialKey];
     const refreshTokenDto: RefreshTokenDto = req.cookies[refreshTokenKey];
 
-    if (refreshTokenDto === undefined) {
+    if (refreshTokenFirstPart == undefined || refreshTokenDto === undefined) {
       return Promise.resolve(false);
     }
 
     return this.authService.validateRefreshToken(
       refreshTokenDto.userId,
-      refreshTokenDto.refreshToken,
+      `${refreshTokenFirstPart}${refreshTokenDto.refreshToken}`,
     );
   }
 }
