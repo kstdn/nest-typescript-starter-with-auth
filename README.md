@@ -14,6 +14,45 @@ Includes:
 - /refresh-token
 - /change-password
 
+### Pagination, filtering, sorting
+We can add the following decorators to controller method parameters:
+
+  @PaginationQuery() paginationOptions: PaginationOptions
+  - the decorator function accepts as arguments the defaultPage and defaultLimit
+  - the decorator function will extract the 'limit' and 'page' query params from the url and populate the **paginationOptions** argument
+
+  @OrderQuery() orderingOptions: OrderingOptions
+  - the decorator function accepts as arguments the defaultOrderBy and defaultDirection
+  - this will extract the 'orderBy' and 'direction' query params from the url and populate the **orderingOptions** argument
+
+  @FilterQuery('version', 'created', 'user.id') filteringOptions: FilteringOptions,
+  - the decorator function accepts as arguments all parameters we want to allow to be used for filtering
+  - nested properties are also allowed, ex. if our entity has a 'user' property, we can use 'user.id' to filter by the id of the user
+  - the decorator function will extract the **filter** query param from the url and populate the **filteringOptions** argument
+
+  The 'filter' param should be formatted in the following way:
+
+  Simple filter: ?filter=[property],[operator],[value]
+
+  Filter with AND: ?filter=[property],[operator],[value]:and:[property],[operator],[value]
+
+  Filter with OR: ?filter=[property],[operator],[value]:or:[property],[operator],[value]
+
+  Parameters:
+
+  - [property] - the resource property we want to filter on
+  
+  - [operator] - one of: 'eq', 'not', 'like', 'gt', 'gte', 'lt', 'lte'
+  
+  - [value] - the value we want to filter by
+
+  If we want to combine several conditions with AND we separate them by **:and:**
+
+  If we want to combine several conditions with OR we separate them by **:or:**
+
+  Only one filter param is allowed per request.
+
+
 ### Migrations
 
 - npm scripts to run migrations
