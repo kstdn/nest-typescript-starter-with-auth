@@ -13,6 +13,13 @@ import {
   Query,
   UseInterceptors,
 } from '@nestjs/common';
+import { FilterQuery } from '../../../common/decorators/filter-query.decorator';
+import { OrderQuery } from '../../../common/decorators/order-query.decorator';
+import { PaginationQuery } from '../../../common/decorators/pagination-query.decorator';
+import { ClassSerializerPaginatedInterceptor } from '../../../common/interceptors/class-serializer-paginated.interceptor';
+import { FilteringOptions } from '../../../common/util/filtering';
+import { OrderingOptions } from '../../../common/util/ordering';
+import { Paginated, PaginationOptions } from '../../../common/util/pagination';
 import { Routes } from '../../../routes';
 import { Authorize } from '../decorators/authorize.decorator';
 import { GrantPermissionDto } from '../dto/grant-permission.dto';
@@ -35,9 +42,18 @@ export class PermissionsController {
   constructor(private readonly permissionsService: PermissionsService) {}
 
   @Authorize(ReadAny(Resource.Permission))
+  @UseInterceptors(ClassSerializerPaginatedInterceptor)
   @Get()
-  getAll(): Promise<ResourcePermission[]> {
-    return this.permissionsService.findAll();
+  getAll(
+    @PaginationQuery() paginationOptions: PaginationOptions,
+    @FilterQuery('resource.id', 'user.id') filteringOptions: FilteringOptions,
+    @OrderQuery() orderingOptions: OrderingOptions,
+  ): Promise<Paginated<ResourcePermission>> {
+    return this.permissionsService.findAllPaginated(
+      paginationOptions,
+      filteringOptions,
+      orderingOptions,
+    );
   }
 
   @Authorize(ReadAny(Resource.Permission))

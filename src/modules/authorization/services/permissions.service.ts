@@ -1,6 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { FilteringOptions } from 'src/common/util/filtering';
 import { Exception } from '../../../common/exceptions/exception.enum';
 import { whereIsActive } from '../../../common/util/find-options.util';
+import { OrderingOptions } from '../../../common/util/ordering';
+import { Paginated, PaginationOptions } from '../../../common/util/pagination';
 import { UsersService } from '../../users/users.service';
 import { GrantPermissionDto } from '../dto/grant-permission.dto';
 import {
@@ -19,8 +22,17 @@ export class PermissionsService {
     private readonly rolesService: RolesService,
   ) {}
 
-  findAll(): Promise<ResourcePermission[]> {
-    return ResourcePermission.find({relations: ['resource', 'user', 'role']});
+  findAllPaginated(
+    paginationOptions: PaginationOptions,
+    filteringOptions: FilteringOptions,
+    orderingOptions: OrderingOptions,
+  ): Promise<Paginated<ResourcePermission>> {
+    return ResourcePermission.findAllPaginated<ResourcePermission>(
+      filteringOptions,
+      paginationOptions,
+      orderingOptions,
+      { relations: ['resource', 'user', 'role'] },
+    );
   }
 
   async findOneOrThrow(permissionId: string): Promise<ResourcePermission> {
