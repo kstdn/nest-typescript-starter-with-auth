@@ -25,7 +25,7 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Authorize(ReadOwn(Resource.User))
+  @Authorize(ReadAny(Resource.User))
   @Get()
   getAll(): Promise<User[]> {
     return this.usersService.findAll();
