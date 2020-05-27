@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { FilteringOptions } from 'src/common/util/filtering';
 import { Exception } from '../../../common/exceptions/exception.enum';
-import { whereIsActive } from '../../../common/util/find-options.util';
+import { isActive } from '../../../common/util/find-options.util';
 import { OrderingOptions } from '../../../common/util/ordering';
 import { Paginated, PaginationOptions } from '../../../common/util/pagination';
 import { UsersService } from '../../users/users.service';
@@ -13,6 +13,8 @@ import {
 } from '../entities/resource-permission.entity';
 import { ResourcesService } from './resource.service';
 import { RolesService } from './roles.service';
+import { Resource } from '../entities/resource.entity';
+import { Role } from '../entities/role.entity';
 
 @Injectable()
 export class PermissionsService {
@@ -31,16 +33,19 @@ export class PermissionsService {
       filteringOptions,
       paginationOptions,
       orderingOptions,
-      { relations: ['resource', 'user', 'role'] },
+      {
+        relations: ['resource', 'user', 'role'],
+      },
     );
   }
 
   async findOneOrThrow(permissionId: string): Promise<ResourcePermission> {
-    return ResourcePermission.findOneOrFail(permissionId, whereIsActive).catch(
-      () => {
-        throw new NotFoundException(Exception.PERMISSION_NOT_FOUND);
-      },
-    );
+    return ResourcePermission.findOneOrFail(permissionId, {
+      where: isActive,
+      relations: ['resource', 'user', 'role'],
+    }).catch(() => {
+      throw new NotFoundException(Exception.PERMISSION_NOT_FOUND);
+    });
   }
 
   async grantToUser(
@@ -48,15 +53,15 @@ export class PermissionsService {
     userId: string,
     operations: GrantPermissionDto,
   ): Promise<ResourcePermissionToUser> {
-    await Promise.all([
+    const [resource, user] = await Promise.all([
       this.resourcesService.findOneOrThrow(resourceId),
       this.usersService.findOneOrThrow(userId),
     ]);
     const permission: ResourcePermissionToUser = new ResourcePermissionToUser();
 
     Object.assign(permission, operations);
-    permission.userId = userId;
-    permission.resourceId = resourceId;
+    permission.user = user;
+    permission.resource = resource;
     return permission.save();
   }
 
@@ -65,15 +70,15 @@ export class PermissionsService {
     roleId: string,
     operations: GrantPermissionDto,
   ): Promise<ResourcePermissionToRole> {
-    await Promise.all([
+    const [resource, role] = await Promise.all<Resource, Role>([
       this.resourcesService.findOneOrThrow(resourceId),
       this.rolesService.findOneOrThrow(roleId),
     ]);
     const permission: ResourcePermissionToRole = new ResourcePermissionToRole();
 
     Object.assign(permission, operations);
-    permission.roleId = roleId;
-    permission.resourceId = resourceId;
+    permission.role = role;
+    permission.resource = resource;
     return permission.save();
   }
 
