@@ -11,7 +11,7 @@ type BasePermissionEntityOwnProperties = Omit<
 const IsBooleanLike = (): ((
   object: Record<string, any>,
   propertyName: string,
-) => void) => IsIn(['true', 'false']);
+) => void) => IsIn(['true', 'false', true, false]);
 
 export class GrantPermissionDto implements BasePermissionEntityOwnProperties {
   @IsDefined()
