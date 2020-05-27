@@ -13,9 +13,7 @@ import {
 
 type Where =
   | FindConditions<any>[]
-  | FindConditions<any>
-  | ObjectLiteral
-  | string;
+  | ObjectLiteral;
 
 export type FilteringOptions = FilteringOption[];
 export type OperatorType = 'eq' | 'not' | 'like' | 'gt' | 'gte' | 'lt' | 'lte';
@@ -70,8 +68,8 @@ export const getWhereCondition = (filteringOption: FilteringOption): Where => {
   return wrapSegment(pathSegments);
 };
 
-export const getFilters = (filteringOptions: FilteringOptions): Where => {
-  const result: Where = [];
+export const getFilters = (filteringOptions: FilteringOptions, initial?: Where): Where => {
+  const result: Where = initial ? [initial] : [];
 
   for (const filteringOption of filteringOptions) {
     const whereCondition = getWhereCondition(filteringOption);
