@@ -10,10 +10,9 @@ import {
   Not,
   ObjectLiteral,
 } from 'typeorm';
+import { ILike } from './ilike.util';
 
-type Where =
-  | FindConditions<any>[]
-  | ObjectLiteral;
+type Where = FindConditions<any>[] | ObjectLiteral;
 
 export type FilteringOptions = FilteringOption[];
 export type OperatorType = 'eq' | 'not' | 'like' | 'gt' | 'gte' | 'lt' | 'lte';
@@ -47,7 +46,7 @@ const getClause = (option: FilteringOption): FindOperator<string> => {
     case 'gte':
       return MoreThanOrEqual(option.value);
     case 'like':
-      return Like(`%${option.value}%`);
+      return ILike(`%${option.value}%`);
     default:
       break;
   }
