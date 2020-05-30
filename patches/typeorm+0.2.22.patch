@@ -1,0 +1,23 @@
+diff --git a/node_modules/typeorm/find-options/FindOperator.js b/node_modules/typeorm/find-options/FindOperator.js
+index 44368fe..60b88ca 100644
+--- a/node_modules/typeorm/find-options/FindOperator.js
++++ b/node_modules/typeorm/find-options/FindOperator.js
+@@ -83,6 +83,8 @@ var FindOperator = /** @class */ (function () {
+                 return aliasPath + " = " + parameters[0];
+             case "like":
+                 return aliasPath + " LIKE " + parameters[0];
++            case "ilike":
++                  return aliasPath + " ILIKE " + parameters[0];
+             case "between":
+                 return aliasPath + " BETWEEN " + parameters[0] + " AND " + parameters[1];
+             case "in":
+diff --git a/node_modules/typeorm/find-options/FindOperatorType.d.ts b/node_modules/typeorm/find-options/FindOperatorType.d.ts
+index 582ad17..e9763ee 100644
+--- a/node_modules/typeorm/find-options/FindOperatorType.d.ts
++++ b/node_modules/typeorm/find-options/FindOperatorType.d.ts
+@@ -1,4 +1,4 @@
+ /**
+  * List of types that FindOperator can be.
+  */
+-export declare type FindOperatorType = "not" | "lessThan" | "lessThanOrEqual" | "moreThan" | "moreThanOrEqual" | "equal" | "between" | "in" | "any" | "isNull" | "like" | "raw";
++export declare type FindOperatorType = "not" | "lessThan" | "lessThanOrEqual" | "moreThan" | "moreThanOrEqual" | "equal" | "between" | "in" | "any" | "isNull" | "like" | "ilike" | "raw";

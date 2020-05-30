@@ -5,6 +5,7 @@
   "description": "Nest TypeScript starter repository with Auth",
   "license": "MIT",
   "scripts": {
+    "postinstall": "npx patch-package",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
