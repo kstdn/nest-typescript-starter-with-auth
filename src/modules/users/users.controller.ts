@@ -9,7 +9,13 @@ import {
   ParseUUIDPipe,
   UseInterceptors,
 } from '@nestjs/common';
+import { FilterQuery } from 'src/common/decorators/filter-query.decorator';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
+import { OrderQuery } from 'src/common/decorators/order-query.decorator';
+import { PaginationQuery } from 'src/common/decorators/pagination-query.decorator';
+import { FilteringOptions } from 'src/common/util/filtering';
+import { OrderingOptions } from 'src/common/util/ordering';
+import { Paginated, PaginationOptions } from 'src/common/util/pagination';
 import { Authorize } from 'src/modules/authorization/decorators/authorize.decorator';
 import {
   DeleteAny,
@@ -27,8 +33,16 @@ export class UsersController {
 
   @Authorize(ReadAny(Resource.User))
   @Get()
-  getAll(): Promise<User[]> {
-    return this.usersService.findAll();
+  getAll(
+    @PaginationQuery() paginationOptions: PaginationOptions,
+    @FilterQuery('username') filteringOptions: FilteringOptions,
+    @OrderQuery() orderingOptions: OrderingOptions,
+  ): Promise<Paginated<User>> {
+    return this.usersService.findAllPaginated(
+      paginationOptions,
+      filteringOptions,
+      orderingOptions,
+    );
   }
 
   @Authorize(ReadOwn(Resource.User))

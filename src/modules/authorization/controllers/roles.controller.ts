@@ -10,6 +10,12 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { FilterQuery } from 'src/common/decorators/filter-query.decorator';
+import { OrderQuery } from 'src/common/decorators/order-query.decorator';
+import { PaginationQuery } from 'src/common/decorators/pagination-query.decorator';
+import { FilteringOptions } from 'src/common/util/filtering';
+import { OrderingOptions } from 'src/common/util/ordering';
+import { Paginated, PaginationOptions } from 'src/common/util/pagination';
 import { Routes } from '../../../routes';
 import { Authorize } from '../decorators/authorize.decorator';
 import { Role } from '../entities/role.entity';
@@ -28,8 +34,16 @@ export class RolesController {
 
   @Authorize(ReadAny(Resource.Role))
   @Get()
-  async getAll(): Promise<Role[]> {
-    return this.rolesService.findAll();
+  async getAll(
+    @PaginationQuery() paginationOptions: PaginationOptions,
+    @FilterQuery('name') filteringOptions: FilteringOptions,
+    @OrderQuery() orderingOptions: OrderingOptions,
+  ): Promise<Paginated<Role>> {
+    return this.rolesService.findAllPaginated(
+      paginationOptions,
+      filteringOptions,
+      orderingOptions,
+    );
   }
 
   @Authorize(ReadAny(Resource.Role))

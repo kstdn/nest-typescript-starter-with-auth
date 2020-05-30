@@ -3,6 +3,9 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { FilteringOptions } from 'src/common/util/filtering';
+import { OrderingOptions } from 'src/common/util/ordering';
+import { Paginated, PaginationOptions } from 'src/common/util/pagination';
 import { DbError } from '../../../common/exceptions/db-error.enum';
 import { Exception } from '../../../common/exceptions/exception.enum';
 import { whereIsActive } from '../../../common/util/find-options.util';
@@ -13,6 +16,18 @@ import { Role } from '../entities/role.entity';
 @Injectable()
 export class RolesService {
   constructor(private readonly usersService: UsersService) {}
+
+  async findAllPaginated(
+    paginationOptions: PaginationOptions,
+    filteringOptions: FilteringOptions,
+    orderingOptions: OrderingOptions,
+  ): Promise<Paginated<Role>> {
+    return Role.findAllPaginated<Role>(
+      filteringOptions,
+      paginationOptions,
+      orderingOptions,
+    );
+  }
 
   async findAll(): Promise<Role[]> {
     return Role.find(whereIsActive);

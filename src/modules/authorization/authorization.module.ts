@@ -7,7 +7,7 @@ import { Role } from './entities/role.entity';
 import { PermissionsController } from './controllers/permissions.controller';
 import { RolesController } from './controllers/roles.controller';
 import { PermissionsService } from './services/permissions.service';
-import { ResourcesService } from './services/resource.service';
+import { ResourcesService } from './services/resources.service';
 import { RolesService } from './services/roles.service';
 import { ResourcesController } from './controllers/resources.controller';
 

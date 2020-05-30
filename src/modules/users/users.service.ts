@@ -9,6 +9,9 @@ import { RefreshTokenService } from '../refresh-token/refresh-token.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
+import { PaginationOptions, Paginated } from 'src/common/util/pagination';
+import { FilteringOptions } from 'src/common/util/filtering';
+import { OrderingOptions } from 'src/common/util/ordering';
 
 @Injectable()
 export class UsersService {
@@ -48,8 +51,16 @@ export class UsersService {
     await this.refreshTokenService.invalidateRefreshToken(user.id);
   }
 
-  findAll(): Promise<User[]> {
-    return this.usersRepository.find(whereIsActive);
+  findAllPaginated(
+    paginationOptions: PaginationOptions,
+    filteringOptions: FilteringOptions,
+    orderingOptions: OrderingOptions,
+  ): Promise<Paginated<User>> {
+    return User.findAllPaginated<User>(
+      filteringOptions,
+      paginationOptions,
+      orderingOptions,
+    );
   }
 
   findOneByUsername(username: string): Promise<User> {

@@ -11,7 +11,7 @@ import {
   ResourcePermissionToRole,
   ResourcePermissionToUser,
 } from '../entities/resource-permission.entity';
-import { ResourcesService } from './resource.service';
+import { ResourcesService } from './resources.service';
 import { RolesService } from './roles.service';
 import { Resource } from '../entities/resource.entity';
 import { Role } from '../entities/role.entity';
@@ -24,7 +24,7 @@ export class PermissionsService {
     private readonly rolesService: RolesService,
   ) {}
 
-  findAllPaginated(
+  async findAllPaginated(
     paginationOptions: PaginationOptions,
     filteringOptions: FilteringOptions,
     orderingOptions: OrderingOptions,
