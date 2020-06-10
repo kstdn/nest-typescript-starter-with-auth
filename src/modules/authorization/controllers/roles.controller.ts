@@ -8,7 +8,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
-  Query,
+  Body,
 } from '@nestjs/common';
 import { FilterQuery } from 'src/common/decorators/filter-query.decorator';
 import { OrderQuery } from 'src/common/decorators/order-query.decorator';
@@ -54,7 +54,7 @@ export class RolesController {
 
   @Authorize(CreateAny(Resource.Role))
   @Post()
-  async createRole(@Query('name') name: string): Promise<Role> {
+  async createRole(@Body('name') name: string): Promise<Role> {
     return this.rolesService.create(name);
   }
 
@@ -80,7 +80,7 @@ export class RolesController {
   @Patch(':id')
   async updateRole(
     @Param('id', ParseUUIDPipe) id: string,
-    @Query('name') name: string,
+    @Body('name') name: string,
   ): Promise<Role> {
     return this.rolesService.update(id, name);
   }
