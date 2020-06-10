@@ -1,5 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FilteringOptions } from 'src/common/util/filtering';
+import { getOrder, OrderingOptions } from 'src/common/util/ordering';
+import {
+  getPaginated,
+  Paginated,
+  PaginationOptions,
+} from 'src/common/util/pagination';
 import { Brackets, getManager, Repository } from 'typeorm';
 import { Exception } from '../../common/exceptions/exception.enum';
 import { whereIsActive } from '../../common/util/find-options.util';
@@ -9,9 +16,6 @@ import { RefreshTokenService } from '../refresh-token/refresh-token.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
-import { PaginationOptions, Paginated } from 'src/common/util/pagination';
-import { FilteringOptions } from 'src/common/util/filtering';
-import { OrderingOptions } from 'src/common/util/ordering';
 
 @Injectable()
 export class UsersService {
@@ -61,6 +65,26 @@ export class UsersService {
       paginationOptions,
       orderingOptions,
     );
+  }
+
+  async findAllWithRolePaginated(
+    roleId: string,
+    { limit, page }: PaginationOptions,
+    orderingOptions: OrderingOptions,
+  ): Promise<Paginated<User>> {
+
+    const order = getOrder(orderingOptions);
+
+    const [items, totalCount] = await User.getRepository()
+      .createQueryBuilder('user')
+      .leftJoin('user.roles', 'role')
+      .where('role.id = :roleId', { roleId })
+      .skip((page - 1) * limit)
+      .take(limit)
+      .orderBy(order)
+      .getManyAndCount();
+
+    return getPaginated<User>(items, totalCount, page, limit);
   }
 
   findOneByUsername(username: string): Promise<User> {

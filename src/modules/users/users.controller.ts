@@ -45,6 +45,20 @@ export class UsersController {
     );
   }
 
+  @Authorize(ReadAny(Resource.User))
+  @Get(`${Routes.Authorization.Roles.Root}/:roleId`)
+  getAllWithRole(
+    @Param('roleId') roleId: string,
+    @PaginationQuery() paginationOptions: PaginationOptions,
+    @OrderQuery() orderingOptions: OrderingOptions,
+  ): Promise<Paginated<User>> {
+    return this.usersService.findAllWithRolePaginated(
+      roleId,
+      paginationOptions,
+      orderingOptions,
+    );
+  }
+
   @Authorize(ReadOwn(Resource.User))
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(Routes.Users.Me)
