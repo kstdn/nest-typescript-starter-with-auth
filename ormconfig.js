@@ -4,6 +4,7 @@ module.exports = {
     entities: ["dist/**/*.entity.js"],
     ssl: true,
     logging: true,
+    subscribers: ["dist/**/*.subscriber.js"],
     migrations: ["migrations/dist/*.js"],
     cli: {
         migrationsDir: "migrations"
