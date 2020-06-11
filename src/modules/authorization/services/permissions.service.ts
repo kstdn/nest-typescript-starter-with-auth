@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { FilteringOptions } from 'src/common/util/filtering';
 import { Exception } from '../../../common/exceptions/exception.enum';
-import { isActive } from '../../../common/util/find-options.util';
 import { OrderingOptions } from '../../../common/util/ordering';
 import { Paginated, PaginationOptions } from '../../../common/util/pagination';
 import { UsersService } from '../../users/users.service';
@@ -13,8 +12,6 @@ import {
 } from '../entities/resource-permission.entity';
 import { ResourcesService } from './resources.service';
 import { RolesService } from './roles.service';
-import { Resource } from '../entities/resource.entity';
-import { Role } from '../entities/role.entity';
 
 @Injectable()
 export class PermissionsService {
@@ -41,7 +38,6 @@ export class PermissionsService {
 
   async findOneOrThrow(permissionId: string): Promise<ResourcePermission> {
     return ResourcePermission.findOneOrFail(permissionId, {
-      where: isActive,
       relations: ['resource', 'user', 'role'],
     }).catch(() => {
       throw new NotFoundException(Exception.PERMISSION_NOT_FOUND);
@@ -70,7 +66,7 @@ export class PermissionsService {
     roleId: string,
     operations: GrantPermissionDto,
   ): Promise<ResourcePermissionToRole> {
-    const [resource, role] = await Promise.all<Resource, Role>([
+    const [resource, role] = await Promise.all([
       this.resourcesService.findOneOrThrow(resourceId),
       this.rolesService.findOneOrThrow(roleId),
     ]);
@@ -97,7 +93,6 @@ export class PermissionsService {
     const permission: ResourcePermission = await this.findOneOrThrow(
       permissionId,
     );
-    permission.isActive = false;
-    return permission.save();
+    return permission.remove();
   }
 }

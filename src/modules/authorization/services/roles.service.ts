@@ -8,7 +8,6 @@ import { OrderingOptions } from 'src/common/util/ordering';
 import { Paginated, PaginationOptions } from 'src/common/util/pagination';
 import { DbError } from '../../../common/exceptions/db-error.enum';
 import { Exception } from '../../../common/exceptions/exception.enum';
-import { whereIsActive } from '../../../common/util/find-options.util';
 import { User } from '../../users/entities/user.entity';
 import { UsersService } from '../../users/users.service';
 import { Role } from '../entities/role.entity';
@@ -30,11 +29,11 @@ export class RolesService {
   }
 
   async findAll(): Promise<Role[]> {
-    return Role.find(whereIsActive);
+    return Role.find();
   }
 
   async findOneOrThrow(id: string): Promise<Role> {
-    return Role.findOneOrFail(id, whereIsActive).catch(() => {
+    return Role.findOneOrFail(id).catch(() => {
       throw new NotFoundException(Exception.ROLE_NOT_FOUND);
     });
   }
@@ -90,7 +89,6 @@ export class RolesService {
 
   async delete(roleId: string): Promise<Role> {
     const role: Role = await this.findOneOrThrow(roleId);
-    role.isActive = false;
-    return role.save();
+    return role.remove();
   }
 }

@@ -1,6 +1,5 @@
 import {
   BaseEntity,
-  Column,
   CreateDateColumn,
   FindManyOptions,
   ObjectType,
@@ -11,14 +10,10 @@ import {
 import { FilteringOptions, getFilters } from '../util/filtering';
 import { getOrder, OrderingOptions } from '../util/ordering';
 import { getPaginated, Paginated, PaginationOptions } from '../util/pagination';
-import { isActive } from '../util/find-options.util';
 
 export class BaseDBEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @Column({ default: true })
-  isActive: boolean;
 
   @CreateDateColumn()
   created: Date;
@@ -36,7 +31,7 @@ export class BaseDBEntity extends BaseEntity {
     orderingOptions: OrderingOptions,
     options?: FindManyOptions<T>,
   ): Promise<Paginated<T>> {
-    const where = getFilters(filteringOptions, isActive);
+    const where = getFilters(filteringOptions);
     const order = getOrder(orderingOptions);
 
     const [items, totalCount] = await (this as any).findAndCount({

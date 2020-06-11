@@ -68,17 +68,11 @@ export const getWhereCondition = (filteringOption: FilteringOption): Where => {
 
 export const getFilters = (
   filteringOptions: FilteringOptions,
-  initial?: Where,
 ): Where => {
   const result: Where = [];
 
-  if (filteringOptions.length === 0) {
-    return [initial];
-  }
-
   for (const filteringOption of filteringOptions) {
     const whereCondition = getWhereCondition(filteringOption);
-    Object.assign(whereCondition, initial);
     if (filteringOption.condition === 'and') {
       const lastCondition = result[result.length - 1] || {};
       Object.assign(lastCondition, whereCondition);

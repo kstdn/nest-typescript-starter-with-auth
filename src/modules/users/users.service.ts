@@ -9,7 +9,6 @@ import {
 } from 'src/common/util/pagination';
 import { Brackets, getManager, Repository } from 'typeorm';
 import { Exception } from '../../common/exceptions/exception.enum';
-import { whereIsActive } from '../../common/util/find-options.util';
 import { createHash } from '../../common/util/hash.util';
 import { ResourcePermission } from '../authorization/entities/resource-permission.entity';
 import { RefreshTokenService } from '../refresh-token/refresh-token.service';
@@ -55,7 +54,7 @@ export class UsersService {
     await this.refreshTokenService.invalidateRefreshToken(user.id);
   }
 
-  findAllPaginated(
+  async findAllPaginated(
     paginationOptions: PaginationOptions,
     filteringOptions: FilteringOptions,
     orderingOptions: OrderingOptions,
@@ -88,23 +87,22 @@ export class UsersService {
   }
 
   findOneByUsername(username: string): Promise<User> {
-    return this.usersRepository.findOne({ username, isActive: true });
+    return this.usersRepository.findOne({ username });
   }
 
   findOneByEmail(email: string): Promise<User> {
-    return this.usersRepository.findOne({ email, isActive: true });
+    return this.usersRepository.findOne({ email });
   }
 
   async findOneOrThrow(id: string): Promise<User> {
-    return this.usersRepository.findOneOrFail(id, whereIsActive).catch(() => {
+    return User.findOneOrFail(id).catch(() => {
       throw new NotFoundException(Exception.USER_NOT_FOUND);
     });
   }
 
   async delete(id: string): Promise<User> {
     const user = await this.findOneOrThrow(id);
-    user.isActive = false;
-    return user.save();
+    return user.remove();
   }
 
   async getAllUserRoleNames(id: number): Promise<string[]> {
