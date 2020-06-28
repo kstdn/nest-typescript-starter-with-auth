@@ -42,7 +42,7 @@ export class Seed1583676460270 implements MigrationInterface {
             resource: userResource,
             role: adminRole,
             createOwn: false,
-            readOwn: false,
+            readOwn: true,
             updateOwn: false,
             deleteOwn: false,
             readAny: true,
