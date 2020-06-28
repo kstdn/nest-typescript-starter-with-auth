@@ -21,9 +21,11 @@ export class LoggingSubscriber implements EntitySubscriberInterface {
 
   beforeRemove(event: RemoveEvent<BaseDBEntity>): void {
     const log = new Log();
-    log.entityId = event.databaseEntity?.id;
-    log.operation = 'Delete';
-    log.stateBeforeOperation = JSON.stringify(event.databaseEntity);
-    log.save();
+    if(event.databaseEntity) {
+      log.entityId = event.databaseEntity.id;
+      log.operation = 'Delete';
+      log.stateBeforeOperation = JSON.stringify(event.databaseEntity);
+      log.save();
+    }
   }
 }
