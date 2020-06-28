@@ -11,10 +11,13 @@ import { EnvDefaults } from './env.defaults';
 import { EnvVariables } from './env.variables';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
 
   // Config
   const config: ConfigService = app.get(ConfigService);
+
+  // CORS
+  app.enableCors({ origin: config.get(EnvVariables.AllowedOrigin), credentials: true })
 
   // Validation
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
