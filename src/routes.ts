@@ -1,6 +1,4 @@
 export const Routes = {
-  Root: 'api',
-
   Authentication: {
     Root: 'authentication',
     Register: 'register',

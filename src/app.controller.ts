@@ -1,10 +1,9 @@
 import { Controller, Get } from '@nestjs/common';
-import { Routes } from './routes';
 
-@Controller(Routes.Root)
+@Controller()
 export class AppController {
   @Get()
-  getHello(): string {
+  getDefaultMessage(): string {
     return 'App works!';
   }
 }
